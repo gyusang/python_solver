@@ -27,6 +27,7 @@ del coords
 
 import tkinter as tk
 master = tk.Tk()
+master.title("Megaminx")
 w = tk.Canvas(master,width=1200,height=600)
 w.pack()
 cpoly = []
