@@ -22,13 +22,6 @@ def fit(state):
 # print("max : %d, avg : %d"%(max(Y[:,2]),pl.average(Y[-40:][:,0])))
 # pl.show()
 
-def newint(b=0):
-    a = None
-    while True:
-        a = randint(-12,13)
-        if a==0 or a==-b: continue
-        else: return a
-
 def SA(state, k=0.7, T=5000, N=10000, a=0.05):
     moves = []
     temp = T

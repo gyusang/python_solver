@@ -1,6 +1,6 @@
 import json
 from copy import copy,deepcopy
-from numpy.random import randint, random
+from random import randint, random
 
 
 with open('perms.txt','r') as file:
@@ -31,5 +31,16 @@ def turn(state,no):
 
 solved = tuple(tuple(i for x in range(10)) for i in range(12))
 
+def newint(b=0):
+    a = None
+    while True:
+        a = randint(-12,12)
+        if a==0 or a==-b: continue
+        else: return a
+
 def mix(n=50):
-	return turn(solved, randint(-12,13,n))
+	turns = [0]
+	for i in range(n):
+		turns.append(newint(turns[-1]))
+	turns.pop(0)
+	return turn(solved,turns)
