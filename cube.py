@@ -1,6 +1,7 @@
 import json
 from copy import copy,deepcopy
-from numpy.random import randint
+from numpy.random import randint, random
+
 
 with open('perms.txt','r') as file:
 	perms = json.load(file)
