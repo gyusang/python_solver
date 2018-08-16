@@ -44,4 +44,4 @@ def SA(state, k=0.7, T=5000, N=10000, a=0.05):
                 b = c
                 moves.append(c)
         temp *= 1-a;
-    return f, moves, state
+    return f, len(moves), state
