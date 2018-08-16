@@ -24,6 +24,7 @@ def fit(state):
 
 def SA(state, k=0.7, T=5000, N=10000, a=0.05):
     moves = []
+    logs = []
     temp = T
     f = fit(state)
     def evaluate(delta):
@@ -44,4 +45,13 @@ def SA(state, k=0.7, T=5000, N=10000, a=0.05):
                 b = c
                 moves.append(c)
         temp *= 1-a;
-    return f, len(moves), state
+        print("temp:%f, fit:%d"%(temp,f))
+        logs.append((temp,f))
+    return logs, state
+
+if __name__=='__main__':
+    rtn = SA(mix(),k=0.7, T=100, N=10000, a=0.005)
+    import pylab as pl
+    graph = pl.array(rtn[0])
+    pl.plot(graph[:,0],graph[:,1],'g.')
+    pl.show()
