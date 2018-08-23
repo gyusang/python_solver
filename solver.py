@@ -29,10 +29,10 @@ def SA(state, k=0.7, T=5000, N=10000, a=0.05):
     f = fit(state)
     def evaluate(delta):
         if delta<=0 : return True
-        elif random()<2**(delta/(k*temp)) : return True
+        elif random()<2**(-delta/(k*temp)) : return True
         else: return False
     while f>0 and temp>1:
-        b = 0
+        b, minimum, maximum = 0,f,f
         next = None
         nextf = None
         for i in range(N):
@@ -43,15 +43,23 @@ def SA(state, k=0.7, T=5000, N=10000, a=0.05):
                 state = next
                 f = nextf
                 b = c
+                minimum = min(minimum,f)
+                maximum = max(maximum,f)
                 moves.append(c)
         temp *= 1-a;
         print("temp:%f, fit:%d"%(temp,f))
-        logs.append((temp,f))
+        logs.append((temp,f,minimum,maximum))
     return logs, state
 
 if __name__=='__main__':
-    rtn = SA(mix(),k=0.7, T=100, N=10000, a=0.005)
+    rtn = SA(mix(),k=0.07, T=30, N=50000, a=0.04)
     import pylab as pl
     graph = pl.array(rtn[0])
+    pl.plot(graph[:,0],graph[:,2],'r.')
+    pl.plot(graph[:,0],graph[:,3],'r.')
     pl.plot(graph[:,0],graph[:,1],'g.')
+    pl.legend(['min','max','last'])
+    pl.title('SA Results')
+    pl.xlabel('Temperature')
+    pl.ylabel('Fitness')
     pl.show()
