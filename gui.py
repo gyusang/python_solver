@@ -30,10 +30,10 @@ master = tk.Tk()
 master.title("Megaminx")
 w = tk.Canvas(master,width=1200,height=600)
 w.pack()
-cpoly = []
-fpoly = []
-bfpoly = [[]for i in range(12)]
-bopoly = [[]for i in range(12)]
+cpoly = [] # Center Polygon
+fpoly = [] # Frame Outline Polygon
+bfpoly = [[]*12] # Block Fill Polygon
+bopoly = [[]*12] # Block Outline Polygon
 cbtn = []
 for i in range(12):
 	cpoly.append(w.create_polygon(centers[i],fill=colors[i]))
@@ -50,7 +50,17 @@ for i in range(12):
 
 del frames, centers, blocks
 
-def update(cube):
+with open('cube_info.txt','r') as file:
+	solved_color = json.load(file)
+
+solved_color = tuple(tuple(tuple(x) for x in i) for i in solved_color)
+l = [10,5,20,5,10]
+block_poly = [[[None]*2 if (i%2 or j%2) else [None]*3 for j in range(l[i])] for i in range(5)]
+i = [2,3,4,5,1]
+for k in range(5):
+
+
+def update(cube): 		# TODO
 	for i in range(12):
 		for j in range(10):
 			w.itemconfig(bfpoly[i][j],fill=colors[cube[i][j]])
