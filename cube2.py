@@ -35,7 +35,7 @@ def permute(src,p, reversed=False):
 			src[block[i-1][0]][block[i-1][1]][1] = (src[block[i][0]][block[i][1]][1] - delta[i] + 3) % 3
 
 		src[block[-2][0]][block[-2][1]][0] = tmp[0]
-		src[block[-2][0]][block[-2][1]][1] = (tmp[1] + delta[-1] + 3) % 3
+		src[block[-2][0]][block[-2][1]][1] = (tmp[1] - delta[-1] + 3) % 3
 
 		x = p[1]
 		block = x[0]
@@ -46,7 +46,7 @@ def permute(src,p, reversed=False):
 			src[block[i-1][0]][block[i-1][1]][1] = (src[block[i][0]][block[i][1]][1] - delta[i] + 2) % 2
 
 		src[block[-2][0]][block[-2][1]][0] = tmp[0]
-		src[block[-2][0]][block[-2][1]][1] = (tmp[1] + delta[-1] + 2) % 2
+		src[block[-2][0]][block[-2][1]][1] = (tmp[1] - delta[-1] + 2) % 2
 
 
 def turn(state,no):

@@ -1,28 +1,25 @@
-from cube import *
+from cube2 import *
+from random import random
 def fit(state):
     score = 0
-    for i in range(12):
-        for j in state[i]:
-            if j != i:
-                score += 1
+    for i in [0]:
+        for j in range(item_num[i]):
+            if i%2 or j%2: # edge condition
+                if state[i][j][0] == (i,j): # correct position
+                    if state[i][j][1]:
+                        score += 4
+                else: # not correct position
+                    score += 3
+            else: # corner condition
+                if state[i][j][0] == (i,j): # correct position not correct rotation
+                    if state[i][j][1]:
+                        score += 2
+                else:
+                    score += 1
     return score
 
-# import pylab as pl
-# def f(n):
-#     r = []
-#     for i in range(100):
-#         r.append(fit(mix(n)))
-#     return pl.average(r),min(r),max(r)
-#
-# X = range(120)
-# Y = pl.array([f(x) for x in X])
-# pl.plot(X,Y[:,0],'g.')
-# pl.plot(X,Y[:,1],'r-')
-# pl.plot(X,Y[:,2],'r-')
-# print("max : %d, avg : %d"%(max(Y[:,2]),pl.average(Y[-40:][:,0])))
-# pl.show()
 
-def SA(state, k=0.7, T=5000, N=10000, a=0.05):
+def SA(state, k=1.0, T=5000, N=10000, a=0.05):
     moves = []
     logs = []
     temp = T
@@ -63,3 +60,22 @@ if __name__=='__main__':
     pl.xlabel('Temperature')
     pl.ylabel('Fitness')
     pl.show()
+
+    # import pylab as pl
+    # def f(n):
+    #     r = []
+    #     for i in range(100):
+    #         r.append(fit(mix(n)))
+    #     return pl.average(r),min(r),max(r)
+    #
+    # X = range(120)
+    # Y = pl.array([f(x) for x in X])
+    # pl.plot(X,Y[:,0],'g.')
+    # pl.plot(X,Y[:,1],'r-')
+    # pl.plot(X,Y[:,2],'r-')
+    # pl.title("섞는 횟수에 따른 fitness")
+    # pl.xlabel("섞는 횟수")
+    # pl.ylabel("Fitness")
+    # pl.legend(["평균","최대","최소"])
+    # print("max : %d, avg : %d"%(max(Y[:,2]),pl.average(Y[-40:][:,0])))
+    # pl.show()

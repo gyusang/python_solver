@@ -1,5 +1,5 @@
 from copy import deepcopy
-from cube import *
+from cube2 import *
 
 colors = (
 	'#%02x%02x%02x' % (255,255,255), #White
@@ -18,6 +18,9 @@ colors = (
 
 with open('coords.txt','r') as file:
 	coords = json.load(file)
+with open('blockinfo.txt','r') as file:
+	block_info = json.load(file)
+block_info = [[[tuple(k) for k in j] for j in i] for i in block_info]
 
 frames =  [tuple(tuple(j) for j in i)for i in coords[0]]
 centers = [tuple(tuple(j) for j in i)for i in coords[1]]
@@ -32,9 +35,8 @@ w = tk.Canvas(master,width=1200,height=600)
 w.pack()
 cpoly = [] # Center Polygon
 fpoly = [] # Frame Outline Polygon
-bfpoly = [[]*12] # Block Fill Polygon
-bopoly = [[]*12] # Block Outline Polygon
-cbtn = []
+bfpoly = [[] for i in range(12)] # Block Fill Polygon
+bopoly = [[] for i in range(12)] # Block Outline Polygon
 for i in range(12):
 	cpoly.append(w.create_polygon(centers[i],fill=colors[i]))
 	for j in range(10):
@@ -50,22 +52,19 @@ for i in range(12):
 
 del frames, centers, blocks
 
-with open('cube_info.txt','r') as file:
-	solved_color = json.load(file)
-
-solved_color = tuple(tuple(tuple(x) for x in i) for i in solved_color)
 l = [10,5,20,5,10]
-block_poly = [[[None]*2 if (i%2 or j%2) else [None]*3 for j in range(l[i])] for i in range(5)]
-i = [2,3,4,5,1]
-for k in range(5):
+def update(cube):
+	for i in range(5):
+		for j in range(l[i]):
+			if i%2 or j%2: m=2
+			else: m=3
+			for k in range(m):
+				loc = block_info[i][j][k]
+				blk = cube[i][j]
+				c = block_info[blk[0][0]][blk[0][1]][(k-blk[1]+m)%m][0]
+				w.itemconfig(bfpoly[loc[0]][loc[1]],fill=colors[c]) # fill = color[c]
 
-
-def update(cube): 		# TODO
-	for i in range(12):
-		for j in range(10):
-			w.itemconfig(bfpoly[i][j],fill=colors[cube[i][j]])
-
-state = solved
+state = deepcopy(solved)
 def gui_turn(no):
 	global state
 	state = turn(state, no)
@@ -73,7 +72,7 @@ def gui_turn(no):
 
 def gui_reset():
 	global state, solved
-	state = solved
+	state = deepcopy(solved)
 	update(state)
 
 def gui_mix(n=50):
