@@ -79,5 +79,13 @@ def mix(n=50):
 	for i in range(n):
 		turns.append(newint(turns[-1]))
 	turns.pop(0)
+	print("turns : ", turns)
 	A = deepcopy(solved)
 	return turn(A,turns)
+
+def mix_seq(n=50):
+	turns = [0]
+	for i in range(n):
+		turns.append(newint(turns[-1]))
+	turns.pop(0)
+	return turns

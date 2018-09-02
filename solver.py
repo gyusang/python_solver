@@ -1,5 +1,11 @@
 from cube2 import *
 from random import random, randint
+
+
+from threading import Event
+halt = Event()
+
+
 def fit(state):
     score = 0
     for i in [0,1,2,3,4]:
@@ -48,11 +54,14 @@ def SA(state, k=1.0, T=5000, N=10000, a=0.05):
         logs.append((temp,f,minimum,maximum))
     return logs, state
 
+
 def GA(state, K=170, N=100, a = 0.8, b = 0.2, e = 0.1):
     if N<=1 :
         print("N should be bigger than 1")
         return
     genes = []
+    min_fits = []
+    max_fits = []
     for i in range(N):
         turns = [0]
         for j in range(K):
@@ -71,7 +80,7 @@ def GA(state, K=170, N=100, a = 0.8, b = 0.2, e = 0.1):
     genes.sort(key=turn_fit)
     generation = 0
     try:
-        while turn_fit(genes[0]) > 0 :
+        while turn_fit(genes[0]) > 0 and not halt.is_set():
             pool = []
             while len(pool) <= N*(1-e): #crossover
                 pair = new_pair()
@@ -96,11 +105,13 @@ def GA(state, K=170, N=100, a = 0.8, b = 0.2, e = 0.1):
             genes = pool
             genes.sort(key=turn_fit)
             generation += 1
-            print("At generation %d, among %d genes, fit =( %d, %d)"%(generation,len(genes),turn_fit(genes[0]),turn_fit(genes[-1])))
+            min_fits.append(turn_fit(genes[0]))
+            max_fits.append(turn_fit(genes[-1]))
+            print("At generation %d, among %d genes, fit =( %d, %d)"%(generation,N,min_fits[-1],max_fits[-1]))
     except:
         print("Exception Ocurred")
     finally:
-        return turn_fit(genes[0]),genes[0]
+        return turn_fit(genes[0]),genes[0],min_fits,max_fits
 
 
 if __name__=='__main__':
@@ -134,4 +145,5 @@ if __name__=='__main__':
     # pl.legend(["평균","최대","최소"])
     # print("max : %d, avg : %d"%(max(Y[:,2]),pl.average(Y[-40:][:,0])))
     # pl.show()
-    print(GA(mix()))
+    halt = False
+    print(GA(mix(),K=200,N=500))
