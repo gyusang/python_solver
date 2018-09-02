@@ -67,11 +67,11 @@ def turn(state,no):
 item_num = [10,5,20,5,10]
 solved = [[[(i,j),0] for j in range(item_num[i])] for i in range(5)]
 
-def newint(b=0):
+def newint(b=0, c=0):
     a = None
     while True:
         a = randint(-12,12)
-        if a==0 or a==-b: continue
+        if a==0 or a==-b or a==-c: continue
         else: return a
 
 def mix(n=50):
