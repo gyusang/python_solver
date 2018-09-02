@@ -91,12 +91,12 @@ def GA(state, K=170, N=100, a = 0.8, b = 0.2, e = 0.1):
                         x[c] = newint(x[c-1])
                     else:
                         x[c] = newint(x[c-1],x[c+1])
-            for i in range(int(N*e)): # elitism
-                pool.append(genes[i])
+            while len(pool) <= N: # elitism
+                pool.append(genes.pop(0))
             genes = pool
             genes.sort(key=turn_fit)
             generation += 1
-            print("At generation %d, fit =( %d, %d)"%(generation,turn_fit(genes[0]),turn_fit(genes[-1])))
+            print("At generation %d, among %d genes, fit =( %d, %d)"%(generation,len(genes),turn_fit(genes[0]),turn_fit(genes[-1])))
     except:
         print("Exception Ocurred")
     finally:
