@@ -91,7 +91,7 @@ def GA(state, K=170, N=100, a = 0.8, b = 0.2, e = 0.1):
                         x[c] = newint(x[c-1])
                     else:
                         x[c] = newint(x[c-1],x[c+1])
-            while len(pool) <= N: # elitism
+            while len(pool) < N: # elitism
                 pool.append(genes.pop(0))
             genes = pool
             genes.sort(key=turn_fit)
