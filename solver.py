@@ -96,7 +96,7 @@ def GA(state, K=170, N=100, a = 0.8, b = 0.2, e = 0.1):
             genes = pool
             genes.sort(key=turn_fit)
             generation += 1
-            print("At generation %d, fit = %d"%(generation,turn_fit(genes[0])))
+            print("At generation %d, fit =( %d, %d)"%(generation,turn_fit(genes[0]),turn_fit(genes[-1])))
     except:
         print("Exception Ocurred")
     finally:
