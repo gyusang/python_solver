@@ -1,12 +1,27 @@
 from cube2 import *
 from random import random, randint
 
+with open('blockinfo.txt','r') as file:
+	block_info = json.load(file)
+block_info = [[[tuple(k) for k in j] for j in i] for i in block_info]
 
 from threading import Event
 halt = Event()
 
-
 def fit(state):
+    score = 0
+    for i in [0,1,2,3,4]:
+        for j in range(item_num[i]):
+            m=2 if (i%2 of j%2) else 3
+                for k in range(m):
+                    loc = block_info[i][j][k]
+                    blk = state[i][j]
+                    if block_info[blk[0][0]][blk[0][1]][(k-blk[1]+m)%m][0] == loc[0]:
+                        score += 1
+    return score
+
+
+def fit2(state):
     score = 0
     for i in [0,1,2,3,4]:
         for j in range(item_num[i]):
