@@ -12,12 +12,12 @@ def fit(state):
     score = 0
     for i in [0,1,2,3,4]:
         for j in range(item_num[i]):
-            m=2 if (i%2 of j%2) else 3
-                for k in range(m):
-                    loc = block_info[i][j][k]
-                    blk = state[i][j]
-                    if block_info[blk[0][0]][blk[0][1]][(k-blk[1]+m)%m][0] == loc[0]:
-                        score += 1
+            m=2 if (i%2 or j%2) else 3
+            for k in range(m):
+                loc = block_info[i][j][k]
+                blk = state[i][j]
+                if block_info[blk[0][0]][blk[0][1]][(k-blk[1]+m)%m][0] == loc[0]:
+                    score += 1
     return score
 
 
@@ -161,4 +161,4 @@ if __name__=='__main__':
     # print("max : %d, avg : %d"%(max(Y[:,2]),pl.average(Y[-40:][:,0])))
     # pl.show()
     halt = False
-    print(GA(mix(),K=200,N=500))
+    print(GA(mix(),K=110,N=355))
