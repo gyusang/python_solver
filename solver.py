@@ -8,15 +8,24 @@ block_info = [[[tuple(k) for k in j] for j in i] for i in block_info]
 from threading import Event
 halt = Event()
 
-def fit(state):
+def fit0(state):
+    score = 0
+    for i in range(12):
+        for j in range(10):
+            if state[i][j] != i:
+                score += 1
+    return score
+
+def fit1(state):
     score = 0
     for i in [0,1,2,3,4]:
         for j in range(item_num[i]):
             m=2 if (i%2 or j%2) else 3
             for k in range(m):
+
                 loc = block_info[i][j][k]
                 blk = state[i][j]
-                if block_info[blk[0][0]][blk[0][1]][(k-blk[1]+m)%m][0] == loc[0]:
+                if block_info[blk[0][0]][blk[0][1]][(k-blk[1]+m)%m][0] != loc[0]:
                     score += 1
     return score
 
@@ -130,6 +139,8 @@ def GA(state, K=170, N=100, a = 0.8, b = 0.2, e = 0.1):
 
 
 if __name__=='__main__':
+    #NOTE SA algorithm
+
     # rtn = SA(mix(),k=0.07, T=30, N=10000, a=0.005)
     # import pylab as pl
     # graph = pl.array(rtn[0])
@@ -142,10 +153,12 @@ if __name__=='__main__':
     # pl.ylabel('Fitness')
     # pl.show()
 
+    #NOTE 섞는 횟수에 따른 fitness 변화
+
     # import pylab as pl
     # def f(n):
     #     r = []
-    #     for i in rangMIe(100):
+    #     for i in range(100):
     #         r.append(fit(mix(n)))
     #     return pl.average(r),min(r),max(r)
     #
@@ -160,5 +173,27 @@ if __name__=='__main__':
     # pl.legend(["평균","최대","최소"])
     # print("max : %d, avg : %d"%(max(Y[:,2]),pl.average(Y[-40:][:,0])))
     # pl.show()
-    halt = False
-    print(GA(mix(),K=110,N=355))
+
+    #NOTE 섞는 과정에서 fitness 변화
+
+    import pylab as pl
+    def f(n):
+        global r
+        A = deepcopy(solved)
+        return fit(turn(A,r[:n]))
+    r = mix_seq(40)
+    fit = fit1
+    for i in range(2):
+        X = range(41)
+        Y = pl.array([f(x) for x in X])
+        pl.plot(X,Y,'-',color='C'+str(i))
+        fit = fit2
+    pl.legend(['fit1','fit2'])
+    pl.title('섞는 과정에서 fitness 변화')
+    pl.xlabel('움직임 횟수')
+    pl.ylabel('Fitness')
+    pl.show()
+
+    #NOTE GA Algorithm
+    
+    # print(GA(mix(),K=110,N=355))
