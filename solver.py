@@ -170,24 +170,25 @@ def GA(state, K=170, N=100, a=0.8, b=0.2, e=0.1):
         return turn_fit(genes[0]), genes[0], min_fits, max_fits
 
 
-sample_mix = [mix_seq(50) for i in range(10)]
+sample_mix = [mix_seq(80) for i in range(50)]
+sample_2 = [mix_seq(50) for i in range(10)]
 # print(sample_mix)
 
 
 def eval_fit(func_fit):
-    def f(n):
-        r = []
-        for i in range(100):
-            r.append(func_fit(mix(n)))
-        return pl.average(r)
-    norm = f(80)
+    r = []
+    for smp in sample_mix:
+        A = deepcopy(solved)
+        turn(A, smp)
+        r.append(func_fit(A))
+    norm = pl.average(r)
     tries = []
-    for j in range(10):
+    for sample in sample_2:
         A = deepcopy(solved)
         # turn(A, sample_mix)
         fits = [func_fit(A)/norm]
-        for i in range(len(sample_mix[j])):
-            turn(A, sample_mix[j][i])
+        for x in sample:
+            turn(A, x)
             fits.append(func_fit(A)/norm)
         tries.append(sum(fits))
     # pl.plot(range(len(fits)), fits, '-')
@@ -315,7 +316,7 @@ if __name__ == '__main__':
     # print(eval_fit(fit1))
     # print(eval_fit(fit2))
     # print(eval_fit(fit3))
-    print(eval_GA(20, 0.8, 0.2, 0.1))
+    # print(eval_GA(20, 0.8, 0.2, 0.1))
 
     # NOTE GA Algorithm
 
