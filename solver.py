@@ -32,22 +32,22 @@ def fit1(state):
     return score
 
 
-def fit2(state):
+def fit2(state, setting = (4,3,2,1)):
     score = 0
     for i in [0, 1, 2, 3, 4]:
         for j in range(item_num[i]):
             if i % 2 or j % 2:  # edge condition
                 if state[i][j][0] == (i, j):  # correct position
                     if state[i][j][1]:
-                        score += 4
+                        score += setting[0]
                 else:  # not correct position
-                    score += 3
+                    score += setting[1]
             else:  # corner condition
                 if state[i][j][0] == (i, j):  # correct position not correct rotation
                     if state[i][j][1]:
-                        score += 2
+                        score += setting[2]
                 else:
-                    score += 1
+                    score += setting[3]
     return score
 
 
@@ -127,10 +127,10 @@ def GA(state, K=170, N=100, a=0.8, b=0.2, e=0.1):
         return fit(turn(tmp, no))
 
     def new_pair():
-        m = newint(0, N)
-        f = newint(0, N)
+        m = randint(0, N-1)
+        f = randint(0, N-1)
         while m == f:
-            f = newint(0, N)
+            f = randint(0, N-1)
         return list(genes[m]), list(genes[f])
 
     genes.sort(key=turn_fit)
@@ -165,9 +165,91 @@ def GA(state, K=170, N=100, a=0.8, b=0.2, e=0.1):
             max_fits.append(turn_fit(genes[-1]))
             print("At generation %d, among %d genes, fit =( %d, %d)" % (generation, N, min_fits[-1], max_fits[-1]))
     except:
-        print("Exception Ocurred")
+        print("Exception Occured")
     finally:
         return turn_fit(genes[0]), genes[0], min_fits, max_fits
+
+
+sample_mix = [mix_seq(50) for i in range(10)]
+# print(sample_mix)
+
+
+def eval_fit(func_fit):
+    def f(n):
+        r = []
+        for i in range(100):
+            r.append(func_fit(mix(n)))
+        return pl.average(r)
+    norm = f(80)
+    tries = []
+    for j in range(10):
+        A = deepcopy(solved)
+        # turn(A, sample_mix)
+        fits = [func_fit(A)/norm]
+        for i in range(len(sample_mix[j])):
+            turn(A, sample_mix[j][i])
+            fits.append(func_fit(A)/norm)
+        tries.append(sum(fits))
+    # pl.plot(range(len(fits)), fits, '-')
+    # pl.show()
+    return pl.average(tries)
+
+
+def eval_GA(K=100, a=0.8, b=0.2, e=0.1):
+    if K <= 1:
+        print("N should be bigger than 1")
+        return
+    genes = []
+    min_fits = []
+    max_fits = []
+    for i in range(K):
+        setting = []
+        for j in range(4):
+            setting.append(random())
+        genes.append(tuple(setting))
+
+    def set_fit(setting):
+        return eval_fit(lambda x:fit2(x,setting))
+
+    def new_pair():
+        m = randint(0, K-1)
+        f = randint(0, K-1)
+        while m == f:
+            f = randint(0, K-1)
+        return list(genes[m]), list(genes[f])
+
+    genes.sort(key=set_fit)
+    generation = 0
+    try:
+        while set_fit(genes[0]) > 40 and not halt.is_set():
+            pool = []
+            while len(pool) <= K * (1 - e):  # crossover
+                pair = new_pair()
+                initial_fit = set_fit(pair[0]), set_fit(pair[1])
+                if random() < a:
+                    location = randint(0, 3)
+                    pair = [pair[0][:location] + pair[1][location:], pair[1][location:] + pair[0][:location]]
+                for i in range(2):
+                    if set_fit(pair[i]) <= initial_fit[i]:
+                        pool.append(pair[i])
+            for x in pool:  # mutation
+                if random() < b:
+                    c = randint(0, 3)
+                    x[c] = random()
+            while len(pool) < K:  # elitism
+                print('elitet')
+                pool.append(genes.pop(0))
+            genes = pool
+            genes.sort(key=set_fit)
+            generation += 1
+            min_fits.append(set_fit(genes[0]))
+            max_fits.append(set_fit(genes[-1]))
+            print("At generation %d, among %d genes, fit =( %.2f, %.2f)" % (generation, K, min_fits[-1], max_fits[-1]))
+    except Exception as e:
+        print("Exception Occured")
+        print(e)
+    finally:
+        return set_fit(genes[0]), genes[:min(20,K)], min_fits, max_fits
 
 
 if __name__ == '__main__':
@@ -208,27 +290,32 @@ if __name__ == '__main__':
 
     # NOTE 섞는 과정에서 fitness 변화
 
+    # import pylab as pl
+    #
+    #
+    # def f(n):
+    #     global r
+    #     A = deepcopy(solved)
+    #     return fit(turn(A, r[:n]))
+    #
+    #
+    # r = mix_seq(40)
+    # fit = fit2
+    # for i in range(2):
+    #     X = range(41)
+    #     Y = pl.array([f(x) for x in X])
+    #     pl.plot(X, Y, '-', color='C' + str(i))
+    #     fit = fit3
+    # pl.legend(['fit2', 'fit3'])
+    # pl.title('섞는 과정에서 fitness 변화')
+    # pl.xlabel('움직임 횟수')
+    # pl.ylabel('Fitness')
+    # pl.show()
     import pylab as pl
-
-
-    def f(n):
-        global r
-        A = deepcopy(solved)
-        return fit(turn(A, r[:n]))
-
-
-    r = mix_seq(40)
-    fit = fit2
-    for i in range(2):
-        X = range(41)
-        Y = pl.array([f(x) for x in X])
-        pl.plot(X, Y, '-', color='C' + str(i))
-        fit = fit3
-    pl.legend(['fit2', 'fit3'])
-    pl.title('섞는 과정에서 fitness 변화')
-    pl.xlabel('움직임 횟수')
-    pl.ylabel('Fitness')
-    pl.show()
+    # print(eval_fit(fit1))
+    # print(eval_fit(fit2))
+    # print(eval_fit(fit3))
+    print(eval_GA(20, 0.8, 0.2, 0.1))
 
     # NOTE GA Algorithm
 
