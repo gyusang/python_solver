@@ -175,13 +175,15 @@ sample_2 = [mix_seq(50) for i in range(10)]
 # print(sample_mix)
 
 
-def eval_fit(func_fit):
+def eval_fit(func_fit, normed=True):
     r = []
     for smp in sample_mix:
         A = deepcopy(solved)
         turn(A, smp)
         r.append(func_fit(A))
     norm = pl.average(r)
+    if not normed:
+        norm = 1
     tries = []
     for sample in sample_2:
         A = deepcopy(solved)
@@ -190,9 +192,8 @@ def eval_fit(func_fit):
         for x in sample:
             turn(A, x)
             fits.append(func_fit(A)/norm)
+        # pl.plot(range(len(fits)), fits, '-')
         tries.append(sum(fits))
-    # pl.plot(range(len(fits)), fits, '-')
-    # pl.show()
     return pl.average(tries)
 
 
@@ -308,14 +309,19 @@ if __name__ == '__main__':
     #     pl.plot(X, Y, '-', color='C' + str(i))
     #     fit = fit3
     # pl.legend(['fit2', 'fit3'])
-    # pl.title('섞는 과정에서 fitness 변화')
+
     # pl.xlabel('움직임 횟수')
     # pl.ylabel('Fitness')
     # pl.show()
     import pylab as pl
-    # print(eval_fit(fit1))
-    # print(eval_fit(fit2))
-    # print(eval_fit(fit3))
+    print(eval_fit(fit1))
+    print(eval_fit(fit2))
+    print(eval_fit(fit3))
+    # pl.title('섞는 과정에서 fitness 변화')
+    # pl.xlabel('섞는 과정 진행')
+    # pl.ylabel('Fitness')
+    # pl.legend(['거리함수 1', '거리함수 2', '거리함수 3'])
+    # pl.show()
     # print(eval_GA(20, 0.8, 0.2, 0.1))
 
     # NOTE GA Algorithm
