@@ -170,10 +170,11 @@ def GA(state, K=170, N=100, a=0.8, b=0.2, e=0.1):
         return turn_fit(genes[0]), genes[0], min_fits, max_fits
 
 
-sample_mix = [mix_seq(80) for i in range(50)]
-sample_2 = [mix_seq(50) for i in range(10)]
+sample_mix = []
 # print(sample_mix)
-
+with open('sample_mix.txt','r') as f:
+    sample_mix = json.load(f)
+sample_2 = [x[:50] for x in sample_mix]
 
 def eval_fit(func_fit, normed=True):
     r = []
@@ -315,8 +316,9 @@ if __name__ == '__main__':
     # pl.show()
     import pylab as pl
     print(eval_fit(fit1))
-    print(eval_fit(fit2))
-    print(eval_fit(fit3))
+    print(eval_fit(lambda x: fit2(x, (4,3,2,1))))
+    print(eval_fit(lambda x:fit2(x,(3,4,1,2))))
+    # print(eval_fit(fit3))
     # pl.title('섞는 과정에서 fitness 변화')
     # pl.xlabel('섞는 과정 진행')
     # pl.ylabel('Fitness')
