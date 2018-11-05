@@ -1,6 +1,18 @@
 from cube2 import *
 from random import random, randint
 from threading import Event
+import numpy as np
+
+with open('Corners.npy','rb') as f:
+    Corners = np.load(f)
+Corners = [tuple(b) for b in Corners]
+with open('Edges.npy','rb') as f:
+    Edges = np.load(f)
+Edges = [tuple(b) for b in Edges]
+with open('dist_e.npy','rb') as f:
+    dist_edge = np.load(f)
+with open('dist_c.npy','rb') as f:
+    dist_corner = np.load(f)
 
 with open('blockinfo.txt', 'r') as file:
     block_info = json.load(file)
@@ -69,7 +81,15 @@ def fit3(state):
                     score += 1
     return score
 
-
+def fit4(state):
+    score = 0
+    for i in [0,1,2,3,4]:
+        for j in range(item_num[i]):
+            if i % 2 or j % 2:
+                score += dist_edge[Edges.index(state[i][j][0]),Edges.index((i,j))]
+            else:
+                score += dist_corner[Corners.index(state[i][j][0]), Corners.index((i, j))]
+    return score
 fit = fit1
 
 
@@ -174,16 +194,19 @@ sample_mix = []
 # print(sample_mix)
 with open('sample_mix.txt','r') as f:
     sample_mix = json.load(f)
+sample_mix = sample_mix[:1]
 sample_2 = [x[:50] for x in sample_mix]
-
+# print(sample_mix)
 def eval_fit(func_fit, normed=True):
-    r = []
-    for smp in sample_mix:
-        A = deepcopy(solved)
-        turn(A, smp)
-        r.append(func_fit(A))
-    norm = pl.average(r)
-    if not normed:
+    if normed:
+        r = []
+        for smp in sample_mix:
+            A = deepcopy(solved)
+            for x in smp:
+                turn(A, x)
+                r.append(func_fit(A))
+        norm = max(r)
+    else:
         norm = 1
     tries = []
     for sample in sample_2:
@@ -195,7 +218,7 @@ def eval_fit(func_fit, normed=True):
             fits.append(func_fit(A)/norm)
         # pl.plot(range(len(fits)), fits, '-')
         tries.append(sum(fits))
-    return pl.average(tries)
+    return fits #pl.average(tries)
 
 
 def eval_GA(K=100, a=0.8, b=0.2, e=0.1):
@@ -293,31 +316,64 @@ if __name__ == '__main__':
 
     # NOTE 섞는 과정에서 fitness 변화
 
-    # import pylab as pl
-    #
-    #
-    # def f(n):
-    #     global r
-    #     A = deepcopy(solved)
-    #     return fit(turn(A, r[:n]))
-    #
-    #
-    # r = mix_seq(40)
-    # fit = fit2
-    # for i in range(2):
-    #     X = range(41)
-    #     Y = pl.array([f(x) for x in X])
-    #     pl.plot(X, Y, '-', color='C' + str(i))
-    #     fit = fit3
-    # pl.legend(['fit2', 'fit3'])
-
-    # pl.xlabel('움직임 횟수')
-    # pl.ylabel('Fitness')
-    # pl.show()
     import pylab as pl
-    print(eval_fit(fit1))
-    print(eval_fit(lambda x: fit2(x, (4,3,2,1))))
-    print(eval_fit(lambda x:fit2(x,(3,4,1,2))))
+
+
+    def f(n):
+        global r
+        A = deepcopy(solved)
+        return fit(turn(A, r[:n]))
+
+
+    r = mix_seq(100)
+    fit = fit4
+    X = range(101)
+    Y = pl.array([f(x) for x in X])
+    pl.plot(X, Y, '-', color='C0')
+    fit = fit1
+    Y = pl.array([f(x) for x in X])
+    pl.plot(X, Y, '-', color='C1')
+    pl.legend(['fit4', 'fit1'])
+    pl.xlabel('움직임 횟수')
+    pl.ylabel('Fitness')
+    pl.show()
+    # import pylab as pl
+
+
+    # # print("%.2f"%eval_fit(fit1))
+    # # print("%.2f"%eval_fit(lambda x: fit2(x, (4,3,2,1))))
+    # # print("%.2f"%eval_fit(lambda x:fit2(x,(0,0,0,1)),normed=False))
+    # tries = eval_fit(lambda x:fit2(x,(1,0,0,0)),normed=True)
+    # pl.title('섞는 횟수에 따른 Fitness 변화')
+    # pl.xlabel('섞는 횟수')
+    # pl.subplot(221)
+    # pl.title('first')
+    # pl.xlabel('섞는 횟수')
+    # pl.ylabel('Fitness')
+    # tries = eval_fit(lambda x: fit2(x, (1, 0, 0, 0)), normed=True)
+    # pl.plot(range(len(tries)),tries,'b.')
+    # pl.subplot(222)
+    # pl.title('second')
+    # pl.xlabel('섞는 횟수')
+    # pl.ylabel('Fitness')
+    # tries = eval_fit(lambda x: fit2(x, (0, 1, 0, 0)), normed=True)
+    # pl.plot(range(len(tries)), tries, 'b.')
+    # pl.subplot(223)
+    # pl.title('third')
+    # pl.xlabel('섞는 횟수')
+    # pl.ylabel('Fitness')
+    # tries = eval_fit(lambda x: fit2(x, (0, 0, 1, 0)), normed=True)
+    # pl.plot(range(len(tries)), tries, 'b.')
+    # pl.subplot(224)
+    # pl.xlabel('섞는 횟수')
+    # pl.ylabel('Fitness')
+    # pl.title('fourth')
+    # tries = eval_fit(lambda x: fit2(x, (0, 0, 0, 1)), normed=True)
+    # pl.plot(range(len(tries)), tries, 'b.')
+    # pl.show()
+    # # print("%.2f" % eval_fit(lambda x: fit2(x, (0,1,0,0))))
+    # # print("%.2f" % eval_fit(lambda x: fit2(x, (0, 0, 1, 0))))
+    # # print("%.2f" % eval_fit(lambda x: fit2(x, (0, 0, 0, 1))))
     # print(eval_fit(fit3))
     # pl.title('섞는 과정에서 fitness 변화')
     # pl.xlabel('섞는 과정 진행')
