@@ -52,16 +52,30 @@ def permute(src, p, reverse=False):
         src[block[-2][0]][block[-2][1]][1] = (tmp[1] - delta[-1] + 2) % 2
 
 
-def permute_block(block, perm, reversed=False):
-    block = tuple(block)
-    for p in perm:
-        if p[0].count(block) >= 1:
-            i = p[0].index(block)
-            if not reversed:
-                return p[0][(i+1)%5]
-            else:
-                return p[0][i-1]
-
+def permute_block(block, perm, rotation, reversed=False):
+    if not rotation:
+        block = tuple(block)
+        for p in perm:
+            if p[0].count(block) >= 1:
+                i = p[0].index(block)
+                if not reversed:
+                    return p[0][(i+1)%5]
+                else:
+                    return p[0][i-1]
+    else:
+        position = tuple(block[0])
+        MOD = 2 if position[0]%2 or position[1]%2 else 3
+        for p in perm:
+            if p[0].count(position) >= 1:
+                i = p[0].index(position)
+                if not reversed:
+                    position = p[0][(i+1)%5]
+                    rotation = (block[1] + p[1][(i+1)%5])% MOD
+                    return position, rotation
+                else:
+                    position = p[0][i-1]
+                    rotation = (block[1] + MOD - p[1][i]) % MOD
+                    return position, rotation
 
 def turn(state, no):
     if not isinstance(no, int):

@@ -20,13 +20,13 @@ for i in range(30):
             if dist_edge[i][k] > rotations or dist_edge[k][i] > rotations:
                 dist_edge[i][k] = dist_edge[k][i] = rotations
             for j in range(12):
-                next = permute_block(block, perms[j])
-                if next != None:
+                next = permute_block(block, perms[j], False)
+                if not (next is None):
                     next_step.append(next)
-                next = permute_block(block, perms[j], True)
-                if next != None:
+                next = permute_block(block, perms[j], False, True)
+                if not (next is None):
                     next_step.append(next)
-        next_step = list(set(next_step))
+        next_step = list(set(next_step + cur_step))
         cur_step = list(next_step)
 dist_edge = np.matrix(dist_edge)
 print(dist_edge)
@@ -40,14 +40,15 @@ for i in range(20):
             if dist_corner[i][k] > rotations or dist_corner[k][i] > rotations:
                 dist_corner[i][k] = dist_corner[k][i] = rotations
             for j in range(12):
-                next = permute_block(block, perms[j])
-                if next != None:
+                next = permute_block(block, perms[j], False)
+                if next is not None:
                     next_step.append(next)
-                next = permute_block(block, perms[j], True)
-                if next != None:
+                next = permute_block(block, perms[j], False, True)
+                if next is not None:
                     next_step.append(next)
-        next_step = list(set(next_step))
+        next_step = list(set(next_step + cur_step))
         cur_step = list(next_step)
+        next_step = []
 dist_corner = np.matrix(dist_corner)
 print(dist_corner)
 
