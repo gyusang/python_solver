@@ -13,6 +13,10 @@ with open('dist_e.npy','rb') as f:
     dist_edge = np.load(f)
 with open('dist_c.npy','rb') as f:
     dist_corner = np.load(f)
+with open('dist_e_2.npy','rb') as f:
+    dist_edge_2 = np.load(f)
+with open('dist_c_2.npy','rb') as f:
+    dist_corner_2 = np.load(f)
 
 with open('blockinfo.txt', 'r') as file:
     block_info = json.load(file)
@@ -81,6 +85,7 @@ def fit3(state):
                     score += 1
     return score
 
+
 def fit4(state):
     score = 0
     for i in [0,1,2,3,4]:
@@ -90,6 +95,19 @@ def fit4(state):
             else:
                 score += dist_corner[Corners.index(state[i][j][0]), Corners.index((i, j))]
     return score
+
+
+def fit5(state):
+    score = 0
+    for i in [0, 1, 2, 3, 4]:
+        for j in range(item_num[i]):
+            if i % 2 or j % 2:
+                score += dist_edge_2[Edges.index((i, j)), Edges.index(state[i][j][0]), state[i][j][1] - 0]
+            else:
+                score += dist_corner_2[Corners.index((i, j)), Corners.index(state[i][j][0]), state[i][j][1] - 0]
+    return score
+
+
 fit = fit1
 
 
@@ -184,8 +202,8 @@ def GA(state, K=170, N=100, a=0.8, b=0.2, e=0.1):
             min_fits.append(turn_fit(genes[0]))
             max_fits.append(turn_fit(genes[-1]))
             print("At generation %d, among %d genes, fit =( %d, %d)" % (generation, N, min_fits[-1], max_fits[-1]))
-    except:
-        print("Exception Occured")
+    except Exception as e:
+        print("Exception Occured: "+str(e))
     finally:
         return turn_fit(genes[0]), genes[0], min_fits, max_fits
 
@@ -218,12 +236,12 @@ def eval_fit(func_fit, normed=True):
             fits.append(func_fit(A)/norm)
         # pl.plot(range(len(fits)), fits, '-')
         tries.append(sum(fits))
-    return fits #pl.average(tries)
+    return pl.average(tries)
 
 
 def eval_GA(K=100, a=0.8, b=0.2, e=0.1):
     if K <= 1:
-        print("N should be bigger than 1")
+        print("K should be bigger than 1")
         return
     genes = []
     min_fits = []
@@ -333,12 +351,17 @@ if __name__ == '__main__':
     fit = fit1
     Y = pl.array([f(x) for x in X])
     pl.plot(X, Y, '-', color='C1')
-    pl.legend(['fit4', 'fit1'])
+    fit = fit5
+    Y = pl.array([f(x) for x in X])
+    pl.plot(X, Y, '-', color='C2')
+    pl.legend(['fit4', 'fit1', 'fit5'])
     pl.xlabel('움직임 횟수')
     pl.ylabel('Fitness')
-    pl.show()
     # import pylab as pl
-
+    print("fit1 : %.2f"%eval_fit(fit1, True))
+    print("fit4 : %.2f"%eval_fit(fit4, True))
+    print("fit5 : %.2f"%eval_fit(fit5, True))
+    pl.show()
 
     # # print("%.2f"%eval_fit(fit1))
     # # print("%.2f"%eval_fit(lambda x: fit2(x, (4,3,2,1))))

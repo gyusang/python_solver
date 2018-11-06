@@ -55,3 +55,6 @@ for i in range(20):
         next_step = []
 
 # 0 대칭행렬, 1의 전치행렬 = 2
+
+np.save('dist_e_2.npy',dist_edge)
+np.save('dist_c_2.npy',dist_corner)
