@@ -1,2 +1,2 @@
 # python_solver
-python code that can solve megaminx
+python code that tries to solve megaminx
